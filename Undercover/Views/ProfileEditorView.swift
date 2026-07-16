@@ -5,9 +5,20 @@ struct ProfileEditorView: View {
     @Environment(ProfileStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
-    @State private var name = ""
+    /// Profil à modifier ; `nil` pour une création.
+    private let profile: Profile?
+
+    @State private var name: String
     @State private var pickerItem: PhotosPickerItem?
     @State private var imageData: Data?
+
+    init(profile: Profile? = nil) {
+        self.profile = profile
+        _name = State(initialValue: profile?.name ?? "")
+        _imageData = State(initialValue: profile?.imageData)
+    }
+
+    private var isEditing: Bool { profile != nil }
 
     var body: some View {
         NavigationStack {
@@ -42,7 +53,7 @@ struct ProfileEditorView: View {
                     Spacer()
 
                     Button("Enregistrer") {
-                        store.add(name: name, imageData: imageData)
+                        save()
                         dismiss()
                     }
                     .buttonStyle(.uPrimary)
@@ -52,7 +63,7 @@ struct ProfileEditorView: View {
                 .padding(.horizontal, Theme.Spacing.l)
                 .padding(.bottom, Theme.Spacing.xl)
             }
-            .navigationTitle("Nouveau profil")
+            .navigationTitle(isEditing ? "Modifier le profil" : "Nouveau profil")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -71,5 +82,16 @@ struct ProfileEditorView: View {
 
     private var trimmedName: String {
         name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func save() {
+        if let profile {
+            var updated = profile
+            updated.name = trimmedName
+            updated.imageData = imageData
+            store.update(updated)
+        } else {
+            store.add(name: name, imageData: imageData)
+        }
     }
 }
