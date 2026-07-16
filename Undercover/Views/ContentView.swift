@@ -49,6 +49,15 @@ struct ContentView: View {
                 .padding(.horizontal, Theme.Spacing.l)
                 .padding(.bottom, Theme.Spacing.xl)
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
         }
         .tint(Theme.Colors.foreground)
     }
@@ -57,10 +66,12 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environment(ProfileStore())
+        .environment(WordStore())
 }
 
 #Preview("Sombre") {
     ContentView()
         .environment(ProfileStore())
+        .environment(WordStore())
         .preferredColorScheme(.dark)
 }

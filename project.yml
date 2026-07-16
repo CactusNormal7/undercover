@@ -14,6 +14,10 @@ targets:
     platform: iOS
     sources:
       - path: Undercover
+      # Référence de dossier : tout CSV déposé dans words/ est embarqué au build,
+      # sans avoir à relancer `xcodegen generate`.
+      - path: words
+        type: folder
     info:
       path: Undercover/Info.plist
       properties:

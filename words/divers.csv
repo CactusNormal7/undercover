@@ -1,0 +1,301 @@
+mot1,mot2,theme
+Chat,Chien,Animal
+Lion,Tigre,Animal
+Dauphin,Requin,Animal
+Aigle,Faucon,Animal
+Cochon,Mouton,Animal
+Éléphant,Rhinocéros,Animal
+Grenouille,Crapaud,Animal
+Loup,Renard,Animal
+Perroquet,Canari,Animal
+Singe,Gorille,Animal
+Pizza,Quiche,Nourriture
+Sushi,Ceviche,Nourriture
+Croissant,Chausson aux pommes,Nourriture
+Camembert,Brie,Nourriture
+Steak,Côtelette,Nourriture
+Fraise,Framboise,Nourriture
+Citron,Pamplemousse,Nourriture
+Carotte,Navet,Nourriture
+Cèpe,Truffe,Nourriture
+Crêpe,Gaufre,Nourriture
+Café,Thé,Boisson
+Vin,Bière,Boisson
+Whisky,Rhum,Boisson
+Champagne,Cidre,Boisson
+Limonade,Orangina,Boisson
+Perrier,Evian,Boisson
+T-shirt,Polo,Vêtement
+Jean,Jogging,Vêtement
+Manteau,Imperméable,Vêtement
+Robe,Jupe,Vêtement
+Basket,Mocassin,Vêtement
+Casquette,Bonnet,Vêtement
+Football,Rugby,Sport
+Tennis,Badminton,Sport
+Natation,Plongée,Sport
+Ski,Snowboard,Sport
+Boxe,Judo,Sport
+Cyclisme,Triathlon,Sport
+Golf,Pétanque,Sport
+Escalade,Randonnée,Sport
+Médecin,Infirmier,Métier
+Avocat,Notaire,Métier
+Architecte,Urbaniste,Métier
+Chef cuisinier,Pâtissier,Métier
+Pompier,Policier,Métier
+Pilote,Contrôleur aérien,Métier
+Journaliste,Photographe,Métier
+Enseignant,Formateur,Métier
+Plage,Lac,Lieu
+Montagne,Colline,Nature
+Forêt,Jungle,Nature
+Musée,Galerie d'art,Lieu
+Cinéma,Théâtre,Lieu
+Hôtel,Auberge de jeunesse,Lieu
+Supermarché,Épicerie,Lieu
+Stade,Gymnase,Lieu
+Château,Manoir,Lieu
+Désert,Savane,Nature
+Voiture,Moto,Transport
+Train,Tramway,Transport
+Avion,Hélicoptère,Transport
+Bateau,Ferry,Transport
+Vélo,Trottinette,Transport
+Métro,RER,Transport
+Télévision,Ordinateur,Technologie
+Téléphone,Tablette,Technologie
+Livre,Magazine,Objet
+Montre,Réveil,Objet
+Lampe,Bougie,Objet
+Cutter,Ciseaux,Objet
+Stylo,Crayon,Objet
+Sac à dos,Valise,Objet
+Miroir,Tableau,Objet
+Chaise,Tabouret,Objet
+Guitare,Basse,Musique
+Piano,Orgue,Musique
+Trompette,Trombone,Musique
+Batterie,Djembé,Musique
+Violon,Alto,Musique
+Flûte,Clarinette,Musique
+Pluie,Neige,Météo
+Orage,Tempête,Météo
+Soleil,Lune,Nature
+Rivière,Fleuve,Nature
+Volcan,Séisme,Nature
+Arc-en-ciel,Aurore boréale,Nature
+Paris,Lyon,Lieu
+Tokyo,Pékin,Lieu
+Brésil,Argentine,Lieu
+Italie,Espagne,Lieu
+New York,Los Angeles,Lieu
+Bras,Jambe,Corps
+Cœur,Poumon,Corps
+Dent,Ongle,Corps
+Sourcil,Cil,Corps
+Genou,Coude,Corps
+Noël,Hanoukka,Fête
+Mariage,Fiançailles,Fête
+Anniversaire,Baptême,Fête
+Carnaval,Halloween,Fête
+Rose,Tulipe,Plante
+Cactus,Aloès,Plante
+Chêne,Sapin,Plante
+Lierre,Vigne,Plante
+Lavande,Menthe,Plante
+Bambou,Roseau,Plante
+Bois,Liège,Matériau
+Acier,Aluminium,Matériau
+Verre,Cristal,Matériau
+Coton,Lin,Matériau
+Béton,Pierre,Matériau
+Échecs,Dames,Jeu
+Poker,Belote,Jeu
+Scrabble,Boggle,Jeu
+Monopoly,Risk,Jeu
+Sudoku,Mots croisés,Jeu
+Intelligence artificielle,Robotique,Technologie
+Blockchain,Cryptomonnaie,Technologie
+Casque VR,Réalité augmentée,Technologie
+Application mobile,Logiciel,Technologie
+Serveur,Cloud,Technologie
+Joie,Euphorie,Émotion
+Tristesse,Mélancolie,Émotion
+Colère,Rage,Émotion
+Peur,Anxiété,Émotion
+Amour,Affection,Émotion
+Tiramisu,Panna cotta,Dessert
+Macaron,Éclair,Dessert
+Glace,Sorbet,Dessert
+Brownie,Cookie,Dessert
+Crème brûlée,Île flottante,Dessert
+Tarte,Clafoutis,Dessert
+Dragon,Licorne,Fantastique
+Elfe,Nain,Fantastique
+Sirène,Triton,Fantastique
+Sorcière,Fée,Fantastique
+Vampire,Zombie,Fantastique
+Biologie,Botanique,Science
+Chimie,Physique,Science
+Astronomie,Astrophysique,Science
+Géologie,Minéralogie,Science
+Psychologie,Psychiatrie,Science
+Peinture,Aquarelle,Art
+Sculpture,Poterie,Art
+Photographie,Vidéo,Art
+Dessin,Croquis,Art
+Street art,Fresque,Art
+Roman,Nouvelle,Littérature
+Poème,Haïku,Littérature
+Biographie,Autobiographie,Littérature
+Conte,Fable,Littérature
+Essai,Tribune,Littérature
+Camping,Glamping,Voyage
+Croisière,Circuit organisé,Voyage
+Backpacking,Road trip,Voyage
+Mars,Vénus,Espace
+Jupiter,Saturne,Espace
+Mercure,Pluton,Espace
+Sel,Poivre,Cuisine
+Cumin,Coriandre,Cuisine
+Moutarde,Ketchup,Cuisine
+Cannelle,Cardamome,Cuisine
+Basilic,Origan,Cuisine
+Cabas,Pochette,Accessoire
+Cravate,Nœud papillon,Accessoire
+Bague,Bracelet,Accessoire
+Lunettes,Monocle,Accessoire
+Ceinture,Bretelles,Accessoire
+Cathédrale,Église,Architecture
+Mosquée,Synagogue,Architecture
+Gratte-ciel,Tour,Architecture
+Pont,Viaduc,Architecture
+Fontaine,Statue,Architecture
+Atlantique,Pacifique,Géographie
+Méditerranée,Mer Noire,Géographie
+Arctique,Antarctique,Géographie
+Stéthoscope,Otoscope,Médecine
+Seringue,Perfusion,Médecine
+Acteur,Danseur,Art
+Chanteur,Rappeur,Musique
+Réalisateur,Scénariste,Cinéma
+Sculpteur,Céramiste,Art
+Mathématiques,Statistiques,Science
+Histoire,Géographie,Science
+Philosophie,Sociologie,Science
+Latin,Grec ancien,Langue
+Éducation physique,Arts plastiques,École
+Aspirateur,Balai,Maison
+Lave-linge,Sèche-linge,Maison
+Réfrigérateur,Congélateur,Maison
+Four,Micro-ondes,Maison
+Éponge,Serpillière,Maison
+Marteau,Maillet,Outil
+Tournevis,Clé à molette,Outil
+Perceuse,Visseuse,Outil
+Niveau,Mètre ruban,Outil
+Microscope,Télescope,Science
+ADN,ARN,Science
+Atome,Molécule,Science
+Gravité,Magnétisme,Science
+Blé,Orge,Nourriture
+Riz,Quinoa,Nourriture
+Pâtes,Couscous,Nourriture
+Pain,Brioche,Nourriture
+Aspirine,Ibuprofène,Médecine
+Sirop,Pastille,Médecine
+Pansement,Compresse,Médecine
+Bouteille,Carafe,Objet
+Boîte,Canette,Objet
+Sachet,Enveloppe,Objet
+Pot,Bocal,Objet
+Fouet,Spatule,Cuisine
+Casserole,Poêle,Cuisine
+Passoire,Écumoire,Cuisine
+Mortier,Moulin à poivre,Cuisine
+Cascade,Geyser,Nature
+Delta,Estuaire,Nature
+Falaise,Dune,Nature
+Glacier,Iceberg,Nature
+Prairie,Steppe,Nature
+Euro,Dollar,Argent
+Yen,Yuan,Argent
+Bitcoin,Ethereum,Argent
+Oscar,César,Récompense
+Nobel,Pulitzer,Récompense
+Médaille d'or,Trophée,Récompense
+Triangle,Rectangle,Mathématiques
+Cercle,Ellipse,Mathématiques
+Cube,Sphère,Mathématiques
+Fraction,Décimale,Mathématiques
+Algèbre,Géométrie,Mathématiques
+Boussole,GPS,Transport
+Ancre,Gouvernail,Transport
+Tente,Tipi,Camping
+Duvet,Hamac,Camping
+Canif,Hachette,Camping
+Gourde,Thermos,Camping
+Ami,Collègue,Social
+Rival,Ennemi,Social
+Mentor,Coach,Social
+Voisin,Colocataire,Social
+Grève,Manifestation,Politique
+Élection,Référendum,Politique
+Panneau solaire,Éolienne,Énergie
+Pétrole,Gaz naturel,Énergie
+Centrale nucléaire,Barrage hydraulique,Énergie
+Baleine,Orque,Animal
+Crabe,Homard,Animal
+Poulpe,Calmar,Animal
+Méduse,Anémone de mer,Animal
+Saumon,Thon,Animal
+Surprise,Étonnement,Émotion
+Honte,Culpabilité,Émotion
+Jalousie,Envie,Émotion
+Fierté,Satisfaction,Émotion
+Nostalgie,Regret,Émotion
+Printemps,Été,Saison
+Automne,Hiver,Saison
+Aube,Crépuscule,Temps
+Matin,Après-midi,Temps
+Siècle,Décennie,Temps
+Python,JavaScript,Informatique
+Mac,PC,Informatique
+Wi-Fi,Bluetooth,Informatique
+Clavier,Souris,Informatique
+SSD,Clé USB,Informatique
+Mario,Sonic,Jeu vidéo
+Minecraft,Fortnite,Jeu vidéo
+PlayStation,Xbox,Jeu vidéo
+Pokémon,Digimon,Jeu vidéo
+Instagram,TikTok,Réseau social
+Twitter,Mastodon,Réseau social
+Facebook,LinkedIn,Réseau social
+YouTube,Twitch,Réseau social
+Astronaute,Cosmonaute,Espace
+Fusée,Navette spatiale,Espace
+Étoile,Comète,Espace
+Trou noir,Nébuleuse,Espace
+Satellite,Station spatiale,Espace
+Cahier,Carnet,École
+Règle,Équerre,École
+Colle,Scotch,Objet
+Agrafeuse,Perforeuse,Objet
+Bordeaux,Amarante,Couleur
+Beige,Écru,Couleur
+Indigo,Violet,Couleur
+Christianisme,Islam,Religion
+Bouddhisme,Hindouisme,Religion
+Athéisme,Agnosticisme,Religion
+Handball,Volleyball,Sport
+Karaté,Taekwondo,Sport
+Surf,Windsurf,Sport
+Patinage artistique,Curling,Sport
+Marathon,Sprint,Sport
+Haltérophilie,Culturisme,Sport
+Escrime,Lutte,Sport
+Javelot,Disque,Sport
+Saut en hauteur,Perche,Sport
+Beurre,Margarine,Nourriture
+Yaourt,Fromage blanc,Nourriture
