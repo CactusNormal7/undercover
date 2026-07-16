@@ -2,6 +2,7 @@
 Undercover.xcodeproj/
 DerivedData/
 .build/
+build/
 xcuserdata/
 *.xcscmblueprint
 *.xccheckout
