@@ -24,31 +24,43 @@ struct ContentView: View {
 
                     Spacer()
 
-                    // Actions
+                    // Menu
                     VStack(spacing: Theme.Spacing.m) {
                         Button("Nouvelle partie") {
                             // À venir : lancement d'une partie
                         }
                         .buttonStyle(.uPrimary)
 
+                        NavigationLink {
+                            ProfilesView()
+                        } label: {
+                            Text("Profils")
+                        }
+                        .buttonStyle(.uSecondary)
+
                         Button("Règles du jeu") {
                             // À venir : écran des règles
                         }
-                        .buttonStyle(.uSecondary)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(Theme.Colors.secondary)
+                        .padding(.top, Theme.Spacing.xs)
                     }
                 }
                 .padding(.horizontal, Theme.Spacing.l)
                 .padding(.bottom, Theme.Spacing.xl)
             }
         }
+        .tint(Theme.Colors.foreground)
     }
 }
 
 #Preview {
     ContentView()
+        .environment(ProfileStore())
 }
 
 #Preview("Sombre") {
     ContentView()
+        .environment(ProfileStore())
         .preferredColorScheme(.dark)
 }

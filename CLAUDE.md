@@ -19,12 +19,22 @@ des civils une fois démasqué.
 ```
 project.yml                        spec XcodeGen (targets, bundle id, deployment target)
 Undercover/
-  App/UndercoverApp.swift          point d'entrée @main
-  Views/ContentView.swift          écran d'accueil
+  App/UndercoverApp.swift          point d'entrée @main (injecte ProfileStore)
+  DesignSystem/
+    Theme.swift                    DA noir & blanc : couleurs, espacements, typo
+    ButtonStyles.swift             styles .uPrimary (plein) / .uSecondary (ghost)
+  Views/
+    ContentView.swift              écran d'accueil / menu
+    ProfilesView.swift             liste des profils (état vide, suppression)
+    ProfileEditorView.swift        création d'un profil (nom + PhotosPicker)
+    Components/AvatarView.swift     avatar circulaire (photo ou initiales)
   Models/
     Role.swift                     enum des rôles (civilian, undercover, mrWhite)
     Player.swift                   joueur (nom, rôle, mot, éliminé ou non)
     Game.swift                     partie (joueurs, mots, phase en cours, round)
+    Profile.swift                  profil joueur persistant (nom, image)
+  Services/
+    ProfileStore.swift             persistance des profils (JSON dans Documents)
   Resources/Assets.xcassets        AppIcon, AccentColor
 UndercoverTests/
   UndercoverTests.swift            tests unitaires XCTest
@@ -46,6 +56,8 @@ UndercoverTests/
 
 ## État actuel
 
-Squelette du projet posé : app SwiftUI buildable, écran d'accueil placeholder, et modèles de
-données de base (`Player`, `Role`, `Game`) sans logique de jeu. À venir : déroulé complet d'une
-partie (distribution des mots, phases de description/vote, détection de fin de partie).
+Base en place : DA noir & blanc minimaliste (design system réutilisable), menu d'accueil, et
+gestion des **profils** de joueurs (création avec nom + photo, persistés en JSON dans Documents ;
+les statistiques par profil viendront plus tard). Modèles de jeu de base (`Player`, `Role`,
+`Game`) posés sans logique. À venir : déroulé complet d'une partie (distribution des mots, phases
+de description/vote, détection de fin de partie) et statistiques des profils.
