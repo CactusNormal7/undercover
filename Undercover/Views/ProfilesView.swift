@@ -66,41 +66,37 @@ struct ProfilesView: View {
     }
 
     private var list: some View {
-        ScrollView {
-            LazyVStack(spacing: Theme.Spacing.s) {
-                ForEach(store.profiles) { profile in
-                    row(for: profile)
+        List {
+            ForEach(store.profiles) { profile in
+                HStack(spacing: Theme.Spacing.m) {
+                    AvatarView(name: profile.name, imageData: profile.imageData)
+                    Text(profile.name)
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(Theme.Colors.foreground)
+                }
+                .padding(.vertical, Theme.Spacing.xs)
+                .listRowBackground(Theme.Colors.background)
+                .listRowSeparatorTint(Theme.Colors.separator)
+                // Swipe natif iOS (glisser depuis le bord droit), stylé dans la DA.
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button {
+                        profileToDelete = profile
+                    } label: {
+                        Label("Supprimer", systemImage: "trash")
+                    }
+                    .tint(Theme.Colors.foreground)
+
+                    Button {
+                        activeSheet = .edit(profile)
+                    } label: {
+                        Label("Modifier", systemImage: "pencil")
+                    }
+                    .tint(Theme.Colors.secondary)
                 }
             }
-            .padding(.horizontal, Theme.Spacing.l)
-            .padding(.top, Theme.Spacing.s)
         }
-    }
-
-    private func row(for profile: Profile) -> some View {
-        HStack(spacing: Theme.Spacing.m) {
-            AvatarView(name: profile.name, imageData: profile.imageData, size: 48)
-
-            Text(profile.name)
-                .font(.body.weight(.medium))
-                .foregroundStyle(Theme.Colors.foreground)
-
-            Spacer(minLength: Theme.Spacing.s)
-
-            HStack(spacing: Theme.Spacing.s) {
-                IconButton("pencil") {
-                    activeSheet = .edit(profile)
-                }
-                IconButton("trash", role: .destructive) {
-                    profileToDelete = profile
-                }
-            }
-        }
-        .padding(Theme.Spacing.s)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Theme.Colors.separator, lineWidth: 1)
-        )
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
     }
 
     private var emptyState: some View {
