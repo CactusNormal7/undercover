@@ -1,0 +1,13 @@
+# Xcode / XcodeGen
+Undercover.xcodeproj/
+DerivedData/
+.build/
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.swiftpm/
