@@ -7,6 +7,10 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
+    # Signature automatique via le Personal Team (Apple ID gratuit).
+    # À définir ici et pas dans Xcode : le .xcodeproj est régénéré par XcodeGen.
+    DEVELOPMENT_TEAM: 485F46D65N
+    CODE_SIGN_STYLE: Automatic
 
 targets:
   Undercover:
