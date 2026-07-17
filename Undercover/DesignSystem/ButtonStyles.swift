@@ -9,12 +9,15 @@ struct PrimaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .padding(.vertical, Theme.Spacing.m)
             .background(Theme.Colors.foreground, in: RoundedRectangle(cornerRadius: Theme.Radius.button))
+            .contentShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
             .opacity(configuration.isPressed ? 0.6 : 1)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
 /// Bouton secondaire "ghost" : contour fin, fond transparent.
+/// `contentShape` étend la zone tactile à toute la capsule — sans elle, seul le
+/// texte et les pixels du trait seraient cliquables (pas de background rempli).
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -26,6 +29,7 @@ struct SecondaryButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: Theme.Radius.button)
                     .stroke(Theme.Colors.foreground, lineWidth: 1.5)
             )
+            .contentShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
             .opacity(configuration.isPressed ? 0.5 : 1)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
