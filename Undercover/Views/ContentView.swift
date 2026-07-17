@@ -26,8 +26,10 @@ struct ContentView: View {
 
                     // Menu
                     VStack(spacing: Theme.Spacing.m) {
-                        Button("Nouvelle partie") {
-                            // À venir : lancement d'une partie
+                        NavigationLink {
+                            GameSetupView()
+                        } label: {
+                            Text("Nouvelle partie")
                         }
                         .buttonStyle(.uPrimary)
 
