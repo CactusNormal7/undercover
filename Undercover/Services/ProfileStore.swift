@@ -40,6 +40,19 @@ final class ProfileStore {
         save()
     }
 
+    /// Enregistre le résultat d'une partie terminée.
+    /// Les profils supprimés entre-temps sont simplement ignorés.
+    func recordGameResult(participantIDs: [UUID], winnerIDs: Set<UUID>) {
+        for participantID in Set(participantIDs) {
+            guard let index = profiles.firstIndex(where: { $0.id == participantID }) else { continue }
+            profiles[index].gamesPlayed += 1
+            if winnerIDs.contains(participantID) {
+                profiles[index].gamesWon += 1
+            }
+        }
+        save()
+    }
+
     // MARK: Persistance
 
     private func load() {
