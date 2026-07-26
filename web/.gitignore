@@ -5,3 +5,10 @@ dist/
 *.tsbuildinfo
 .vite/
 coverage/
+
+# Client Prisma généré (`pnpm --filter @undercover/db generate`, joué au postinstall)
+packages/db/src/generated/
+
+# Variables locales
+.env
+.env.local

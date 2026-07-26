@@ -33,18 +33,31 @@ export function recallSeat(code: string): Seat | null {
 export const rememberName = (name: string) => localStorage.setItem('undercover.name', name);
 export const recallName = () => localStorage.getItem('undercover.name') ?? '';
 
-/** Jeton d'abonnement de développement, en attendant le vrai fournisseur d'auth. */
+/**
+ * Jeton de session Clerk, fourni par `TokenBridge` (cf. `auth.tsx`). Ce module
+ * reste ainsi indépendant de React et de Clerk : il demande un jeton, sans
+ * savoir d'où il vient.
+ */
+type TokenProvider = () => Promise<string | null>;
+
+let tokenProvider: TokenProvider | null = null;
+
+export function setTokenProvider(provider: TokenProvider): void {
+  tokenProvider = provider;
+}
+
+/** Repli local quand Clerk n'est pas configuré : `dev:<id>:<sub|free>`. */
 export const devToken = () => localStorage.getItem('undercover.devToken');
 
-function authHeaders(): HeadersInit {
-  const token = devToken();
+async function authHeaders(): Promise<HeadersInit> {
+  const token = (await tokenProvider?.()) ?? devToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify(body),
   });
   if (!response.ok) {

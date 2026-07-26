@@ -1,0 +1,13 @@
+# Secrets locaux du Worker. Copier en `.dev.vars` (ignoré par git).
+# En production : `wrangler secret put <NOM>`.
+
+# Clerk — clé serveur. Sans elle, aucun jeton de session n'est vérifié et tout
+# le monde est traité comme invité (le jeton de dev prend le relais).
+CLERK_SECRET_KEY="sk_test_..."
+
+# Postgres. Sans elle, aucun droit d'accès n'est lu : personne n'est abonné.
+# Supabase, Neon ou un Postgres local — l'application ne fait pas la différence.
+DATABASE_URL="postgresql://postgres:password@localhost:5432/undercover"
+
+# Signature des jetons de siège. Doit être long et aléatoire hors dev.
+SEAT_SECRET="dev-only-insecure-secret"

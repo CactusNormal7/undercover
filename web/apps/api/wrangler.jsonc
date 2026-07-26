@@ -3,6 +3,9 @@
   "name": "undercover-api",
   "main": "src/index.ts",
   "compatibility_date": "2025-05-01",
+  // Requis par le pilote Postgres de Prisma (`pg` passe par les sockets TCP
+  // des Workers via `node:net`).
+  "compatibility_flags": ["nodejs_compat"],
   // Une partie = un Durable Object, nommé d'après son code d'invitation.
   "durable_objects": {
     "bindings": [{ "name": "GAME_ROOM", "class_name": "GameRoom" }]
@@ -13,8 +16,11 @@
   "rules": [{ "type": "Text", "globs": ["**/*.csv"], "fallthrough": true }],
   "vars": {
     "ALLOWED_ORIGINS": "http://localhost:5173",
+    "CLERK_AUTHORIZED_PARTIES": "http://localhost:5173",
     // Écrasé par un vrai secret en production : `wrangler secret put SEAT_SECRET`.
     "SEAT_SECRET": "dev-only-insecure-secret"
   },
+  // Secrets (jamais ici) : `wrangler secret put CLERK_SECRET_KEY`,
+  // `wrangler secret put DATABASE_URL`. En local, les poser dans `.dev.vars`.
   "observability": { "enabled": true }
 }

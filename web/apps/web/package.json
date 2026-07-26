@@ -11,6 +11,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.3",
     "@undercover/protocol": "workspace:*",
     "@undercover/rules": "workspace:*",
     "react": "^19.1.0",

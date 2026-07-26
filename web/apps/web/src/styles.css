@@ -424,3 +424,20 @@ select:focus {
   text-decoration: line-through;
   opacity: 0.5;
 }
+
+/* Compte ---------------------------------------------------------------- */
+
+.account-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 32px;
+}
+
+code {
+  font-size: 12px;
+  border: 1px solid var(--separator);
+  border-radius: 6px;
+  padding: 1px 4px;
+  word-break: break-all;
+}

@@ -1,0 +1,91 @@
+// Schéma de la base — comptes et droits d'accès.
+//
+// Prisma est ici une **couche d'abstraction volontaire** : l'hébergeur Postgres
+// (Supabase au départ) ne doit jamais transparaître ailleurs que dans
+// `DATABASE_URL`. Rien de spécifique à un fournisseur dans ce fichier : pas
+// d'extension, pas de type propriétaire, pas de RLS. Changer d'hébergeur doit
+// se réduire à changer l'URL et rejouer les migrations.
+//
+// Le reste du code ne voit jamais Prisma non plus : il passe par l'interface
+// `UndercoverDb` (`src/index.ts`). C'est la vraie assurance de portabilité.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  // Le client tourne dans un Worker Cloudflare, pas dans Node.
+  runtime      = "workerd"
+  moduleFormat = "esm"
+}
+
+// Aucune URL ici : depuis Prisma 7 elle vit dans `prisma.config.ts` pour les
+// migrations, et arrive par l'adaptateur pour l'exécution. Le schéma ne sait
+// donc rien de l'endroit où tourne la base — exactement ce qu'on veut.
+datasource db {
+  provider = "postgresql"
+}
+
+/// Compte applicatif. L'identité elle-même vit chez Clerk : on n'en conserve
+/// que la clé étrangère, jamais le mot de passe ni les identifiants sociaux.
+model Account {
+  id          String   @id @default(uuid())
+  clerkUserId String   @unique
+  displayName String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entitlement Entitlement?
+
+  @@map("accounts")
+}
+
+enum EntitlementStatus {
+  ACTIVE
+  /// Échec de paiement, accès maintenu le temps de la relance (billing retry
+  /// Stripe, grace period App Store).
+  GRACE
+  EXPIRED
+  REFUNDED
+}
+
+enum EntitlementSource {
+  STRIPE
+  APP_STORE
+  /// Octroi manuel : support, test, presse.
+  MANUAL
+}
+
+/// Droit d'accès à l'abonnement — **une seule ligne par compte, quelle que soit
+/// la plateforme d'achat**. C'est la table qui fait qu'un abonnement pris sur
+/// iOS vaut sur le web, et inversement. Stripe et les App Store Server
+/// Notifications écrivent tous deux ici.
+model Entitlement {
+  id        String            @id @default(uuid())
+  accountId String            @unique
+  account   Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  status    EntitlementStatus
+  source    EntitlementSource
+  /// Identifiant du produit côté plateforme (price Stripe, product id App Store).
+  productId String
+  /// Fin de la période payée. `null` = pas de terme connu (octroi manuel).
+  currentPeriodEnd  DateTime?
+  cancelAtPeriodEnd Boolean   @default(false)
+  /// Référence chez le fournisseur : `sub_…` chez Stripe,
+  /// `originalTransactionId` côté App Store. Sert au rapprochement.
+  externalRef String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@map("entitlements")
+}
+
+/// Idempotence des webhooks : Stripe comme Apple rejouent leurs notifications.
+/// Sans ce garde-fou, un même événement peut prolonger un abonnement deux fois.
+model ProcessedWebhookEvent {
+  id         String            @id @default(uuid())
+  provider   EntitlementSource
+  eventId    String
+  receivedAt DateTime          @default(now())
+
+  @@unique([provider, eventId])
+  @@map("processed_webhook_events")
+}

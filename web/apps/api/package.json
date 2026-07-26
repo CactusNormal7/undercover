@@ -11,6 +11,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@clerk/backend": "^3.13.1",
+    "@undercover/db": "workspace:*",
     "@undercover/protocol": "workspace:*",
     "@undercover/rules": "workspace:*"
   },

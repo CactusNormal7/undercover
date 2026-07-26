@@ -16,6 +16,6 @@
     "typescript": "^5.8.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "workerd"]
+    "onlyBuiltDependencies": ["@prisma/engines", "esbuild", "prisma", "workerd"]
   }
 }

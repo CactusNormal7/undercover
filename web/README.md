@@ -10,6 +10,7 @@ Monorepo pnpm, à la racine `web/` du dépôt de l'app iOS — le corpus de mots
 packages/
   rules/      moteur de jeu — port TypeScript de GameRules.swift + ses tests
   protocol/   messages WebSocket client ⇄ serveur (types partagés)
+  db/         Prisma — comptes et entitlements, seule porte vers Postgres
 apps/
   api/        Cloudflare Worker + Durable Objects : une partie = un objet
   web/        SPA React + Vite
@@ -24,9 +25,49 @@ pnpm install
 pnpm dev          # API sur :8787 et front sur :5173
 ```
 
+Ça suffit pour jouer : sans clé Clerk ni base, tout le monde est invité, et
+`localStorage.setItem('undercover.devToken', 'dev:moi:sub')` simule un hôte
+abonné.
+
 Autres commandes : `pnpm test` (moteur), `pnpm typecheck`, `pnpm build`.
 
-Le front lit `VITE_API_URL` (défaut `http://localhost:8787`).
+### Avec comptes et abonnements
+
+Copier les exemples, puis remplir :
+
+```bash
+cp apps/api/.dev.vars.example apps/api/.dev.vars       # CLERK_SECRET_KEY, DATABASE_URL
+cp apps/web/.env.example apps/web/.env.local           # VITE_CLERK_PUBLISHABLE_KEY
+cp packages/db/.env.example packages/db/.env           # DATABASE_URL (migrations)
+pnpm --filter @undercover/db migrate                   # crée les tables
+```
+
+## Base de données
+
+Prisma est là **pour ne pas s'attacher à un hébergeur**, pas pour le confort
+d'écriture. Deux règles en découlent :
+
+- le schéma reste du Postgres nu — pas d'extension, pas de type propriétaire,
+  pas de RLS Supabase. Déménager = changer `DATABASE_URL`, rejouer les migrations ;
+- le reste du code ne voit **jamais** Prisma : il passe par l'interface
+  `UndercoverDb` (`packages/db/src/index.ts`). Changer d'ORM ne toucherait que ce
+  fichier.
+
+Le client est généré (`prisma generate`, joué au `postinstall`) dans
+`packages/db/src/generated/`, ignoré par git.
+
+La base n'est lue **qu'à la création d'une partie** : les droits sont ensuite
+figés dedans. Ni le Durable Object ni les actions de jeu ne touchent Postgres.
+
+## Authentification
+
+Clerk, vérifié côté serveur par signature (`verifyToken`), sans appel réseau sur
+le chemin critique. Un compte ne sert qu'à **porter l'abonnement** : rejoindre
+une partie n'en demande aucun.
+
+Comme un navigateur ne peut pas poser d'en-tête `Authorization` sur un
+WebSocket, l'identité vérifiée au moment de prendre un siège est **scellée dans
+le jeton de siège** (HMAC) plutôt que revérifiée à la connexion.
 
 ## Ce qui est en place
 
@@ -50,15 +91,14 @@ Le front lit `VITE_API_URL` (défaut `http://localhost:8787`).
 
 | Sujet | État |
 | --- | --- |
-| Authentification | `resolveIdentity` accepte un jeton de dev `dev:<accountId>:<sub\|free>`. À remplacer par Supabase Auth ou Clerk (non tranché). |
-| Entitlements | Déduits du jeton de dev. À lire dans Postgres, table unique alimentée par le webhook Stripe et les App Store Server Notifications V2. |
-| Paiement | Rien. Stripe côté web, StoreKit 2 côté iOS. |
-| Statistiques | Non écrites en fin de partie (l'app iOS le fait en local). Nécessite la base. |
-| Règles avancées | `capabilities.advancedRules` est transporté mais n'ouvre encore aucune règle : leur contenu n'est pas arbitré. |
-| Découpage gratuit/payant | `FREE_THEMES` dans `apps/api/src/words.ts` est **provisoire**. |
-
-Essayer le cas abonné en local : `localStorage.setItem('undercover.devToken', 'dev:moi:sub')`
-avant de créer une partie.
+| Authentification | ✅ Clerk, côté serveur et côté front. Repli invité si la clé manque. |
+| Schéma des entitlements | ✅ Table unique `entitlements`, une ligne par compte quelle que soit la plateforme d'achat, plus l'idempotence des webhooks. |
+| **Écriture** des entitlements | ❌ **Rien n'écrit dedans.** Personne ne peut devenir abonné autrement qu'en insérant la ligne à la main. C'est le prochain trou à boucher. |
+| Paiement | ❌ Stripe côté web (webhook → `grantEntitlement`), StoreKit 2 + App Store Server Notifications V2 côté iOS. `claimWebhookEvent` est déjà là pour l'idempotence. |
+| Statistiques | ❌ Non écrites en fin de partie (l'app iOS le fait en local). Le schéma ne les modélise pas encore — on ne sait pas si les invités sans compte en accumulent. |
+| Règles avancées | ❌ `capabilities.advancedRules` est transporté mais n'ouvre aucune règle : leur contenu n'est pas arbitré. |
+| Découpage gratuit/payant | ⚠️ `FREE_THEMES` dans `apps/api/src/words.ts` est **provisoire** (4 catégories sur 50). |
+| Taille du bundle Worker | ⚠️ ~1,35 Mo gzip avec Prisma et Clerk. Sous la limite, mais à surveiller ; le scinder en deux Workers reste possible si ça se tend. |
 
 ## Points à ne pas casser
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { createRoom, joinRoom, recallName, rememberName, rememberSeat } from '../api.js';
+import { AccountBar } from '../auth.js';
 
 /**
  * Accueil : créer une partie (il faut un compte pour porter l'abonnement) ou en
@@ -46,6 +47,7 @@ export function Home({ onEnterRoom }: { onEnterRoom: (code: string) => void }) {
 
   return (
     <main className="screen screen--centered">
+      <AccountBar />
       <h1 className="title">Undercover</h1>
       <p className="subtitle">Le même jeu, chacun sur son écran.</p>
 
@@ -88,8 +90,8 @@ export function Home({ onEnterRoom }: { onEnterRoom: (code: string) => void }) {
       {error && <p className="error">{error}</p>}
 
       <p className="note">
-        Rejoindre ne demande aucun compte. Seul l’hôte a besoin d’un abonnement pour ouvrir les
-        catégories de mots premium — il vaut alors pour toute la table.
+        Rejoindre ne demande aucun compte. Seul l’hôte a besoin d’un compte et d’un abonnement pour
+        ouvrir les catégories premium — il vaut alors pour toute la table.
       </p>
     </main>
   );

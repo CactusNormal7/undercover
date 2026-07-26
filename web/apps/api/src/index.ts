@@ -1,5 +1,5 @@
 import type { Env } from './env.js';
-import { resolveIdentity } from './entitlements.js';
+import { resolveHostAccess, resolveIdentity } from './entitlements.js';
 import { issueSeatToken, verifySeatToken } from './seat.js';
 
 export { GameRoom } from './GameRoom.js';
@@ -59,7 +59,8 @@ export default {
       if (!name) return json({ error: 'name_required' }, { status: 400, cors });
 
       // Ce que l'hôte a payé décide de ce que **toute la table** pourra jouer.
-      const identity = await resolveIdentity(request, env);
+      // Seul endroit où les droits sont lus en base.
+      const identity = await resolveHostAccess(request, env);
       const hostSeatId = crypto.randomUUID();
 
       // Collision de code : on retente sur un autre. Six caractères sur cet
@@ -81,7 +82,10 @@ export default {
           return json(
             {
               code,
-              seatToken: await issueSeatToken(env, code, hostSeatId),
+              seatToken: await issueSeatToken(env, code, {
+                seatId: hostSeatId,
+                accountId: identity.accountId,
+              }),
               isSubscribed: identity.isSubscribed,
             },
             { status: 201, cors },
@@ -112,20 +116,26 @@ export default {
         const info = await stub.fetch('https://room/info');
         if (!info.ok) return json({ error: 'room_not_found' }, { status: 404, cors });
 
-        const seatId = crypto.randomUUID();
-        return json({ code, seatToken: await issueSeatToken(env, code, seatId) }, { status: 201, cors });
+        // Rejoindre n'exige aucun compte, mais si l'on est connecté on scelle
+        // l'identité dans le siège — c'est le seul moment où l'en-tête
+        // `Authorization` est disponible sur ce parcours.
+        const identity = await resolveIdentity(request, env);
+        const seat = { seatId: crypto.randomUUID(), accountId: identity.accountId };
+        return json(
+          { code, seatToken: await issueSeatToken(env, code, seat) },
+          { status: 201, cors },
+        );
       }
 
       // GET /api/rooms/:code/ws — connexion temps réel.
       if (action === '/ws' && request.method === 'GET') {
-        const seatId = await verifySeatToken(env, code, url.searchParams.get('token'));
-        if (!seatId) return new Response('Invalid seat token', { status: 401, headers: cors });
+        const seat = await verifySeatToken(env, code, url.searchParams.get('token'));
+        if (!seat) return new Response('Invalid seat token', { status: 401, headers: cors });
 
-        const identity = await resolveIdentity(request, env);
         const target = new URL('https://room/ws');
-        target.searchParams.set('seat', seatId);
+        target.searchParams.set('seat', seat.seatId);
         target.searchParams.set('name', url.searchParams.get('name') ?? '');
-        if (identity.accountId) target.searchParams.set('account', identity.accountId);
+        if (seat.accountId) target.searchParams.set('account', seat.accountId);
 
         return stub.fetch(target, request);
       }

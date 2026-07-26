@@ -71,14 +71,18 @@ web/                               monorepo pnpm de la version en ligne
       src/redact.ts                **projection par joueur** : le seul état qui sort du serveur
       src/rng.ts                   SplitMix64 injecté, comme le SeededRNG des tests Swift
     protocol/                      messages WebSocket client ⇄ serveur
+    db/                            **seule porte vers Postgres**
+      prisma/schema.prisma         comptes, entitlements, idempotence des webhooks
+      src/index.ts                 interface `UndercoverDb` — Prisma reste enfermé derrière
   apps/
     api/                           Cloudflare Worker
       src/index.ts                 façade HTTP : création, join, upgrade WebSocket
       src/GameRoom.ts              Durable Object — une partie, autorité, diffusion
-      src/entitlements.ts          identité + droits (stub : jeton de dev)
-      src/seat.ts                  jetons de siège signés (invités sans compte)
+      src/entitlements.ts          vérification Clerk + lecture des droits
+      src/seat.ts                  jetons de siège signés (portent aussi le compte)
       src/words.ts                 catégories et gating, lit le CSV partagé
     web/                           SPA React + Vite (accueil, salon, déroulé)
+      src/auth.tsx                 Clerk, avec repli sans compte si la clé manque
 ```
 
 ## Workflow
@@ -141,8 +145,13 @@ ne parle encore à aucun backend : ni compte, ni abonnement, ni notion de catég
 Côté **web**, une partie se joue de bout en bout : création par l'hôte, invitation par lien ou
 code, joueurs invités sans compte, révélation, discussion, vote dépouillé par le serveur, devinette
 de Mr. White, fin de partie et rejeu. Le serveur est autorité et n'envoie à chacun que sa
-projection. Ce qui est encore simulé — auth, entitlements, paiement, statistiques — est listé dans
-`web/README.md` ; le découpage gratuit/payant des catégories y est provisoire.
+projection. Clerk vérifie les sessions, le schéma Prisma des comptes et entitlements existe.
+
+Manque encore : **rien n'écrit dans la table des entitlements** (ni Stripe, ni les notifications
+App Store), donc personne ne peut devenir abonné autrement qu'à la main ; les statistiques de fin
+de partie ne sont pas enregistrées ; les « règles poussées » sont transportées
+(`capabilities.advancedRules`) mais n'ouvrent rien. Détails et variables d'environnement dans
+`web/README.md`. Le découpage gratuit/payant des catégories y est provisoire.
 
 ## Direction produit (actée)
 
@@ -204,8 +213,8 @@ est sur son écran. C'est un changement de nature, pas un portage.
 | --- | --- |
 | Frontend | React + Vite + TypeScript (SPA — c'est un jeu, pas un site de contenu ; Next.js seulement si des pages marketing/SEO s'y ajoutent) |
 | Temps réel + autorité | **Durable Objects Cloudflare** : un objet = une partie. Alternative auto-hébergée si besoin : **Colyseus** |
-| Base de données | Postgres (Supabase ou Neon) — comptes, profils, stats, entitlements |
-| Authentification | Supabase Auth ou Clerk (non tranché) |
+| Base de données | **Postgres derrière Prisma** — comptes et entitlements. Supabase au départ, mais rien ne doit en dépendre : l'hébergeur doit rester interchangeable |
+| Authentification | **Clerk** |
 | Paiement | **Stripe** côté web, **StoreKit 2** côté iOS, écrivant dans la *même* table d'entitlements |
 
 Justifications, pour ne pas les re-débattre plus tard :
@@ -225,13 +234,23 @@ Justifications, pour ne pas les re-débattre plus tard :
 - **Durable Objects sans PartyKit** : la recommandation initiale mentionnait PartyKit, mais son
   développement a rejoint Cloudflare et l'API WebSocket native des DO couvre le besoin sans
   couche intermédiaire. Une dépendance de moins sur le chemin critique.
+- **Prisma est là pour ne pas s'attacher à un hébergeur** : c'est la raison de son choix, avant
+  tout confort d'écriture. Donc rien de spécifique à Supabase dans le schéma — pas d'extension,
+  pas de type propriétaire, pas de RLS — et le reste du code ne voit jamais Prisma : il passe par
+  l'interface `UndercoverDb` (`web/packages/db/src/index.ts`). Déménager doit se réduire à changer
+  `DATABASE_URL` et rejouer les migrations.
+- **Clerk n'est appelé que pour vérifier un jeton**, jamais pour posséder l'état applicatif : un
+  compte local (`Account`) référence le `clerkUserId`, et c'est cette clé locale que porte
+  l'entitlement. Changer de fournisseur d'auth ne toucherait qu'une colonne.
+- **La base n'est lue qu'à la création d'une partie.** Les droits sont figés dans la partie, donc
+  ni le Durable Object ni les actions de jeu ne touchent Postgres — ce qui évite d'exposer la
+  latence de la base au temps réel.
 - ⚠️ Si l'app iOS propose un login Google/Facebook, **Sign in with Apple devient obligatoire**
-  (règle App Store). À intégrer au choix de l'auth, pas après.
+  (règle App Store). Clerk le propose ; à activer au moment du login iOS, pas après.
 
 ### Questions encore ouvertes
 
 - Découpage précis gratuit / payant : quelles catégories, quelles « règles poussées ».
-- Fournisseur d'auth (Supabase Auth vs Clerk), et si l'app iOS bascule ses profils locaux vers des
-  comptes ou les garde en parallèle.
+- Si l'app iOS bascule ses profils locaux vers des comptes Clerk ou les garde en parallèle.
 - Transfert d'hôte si l'hôte abonné quitte la partie en cours.
 - Les invités sans compte accumulent-ils des statistiques (et où) ?
