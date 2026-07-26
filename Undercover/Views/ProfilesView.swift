@@ -70,9 +70,18 @@ struct ProfilesView: View {
             ForEach(store.profiles) { profile in
                 HStack(spacing: Theme.Spacing.m) {
                     AvatarView(name: profile.name, imageData: profile.imageData)
-                    Text(profile.name)
-                        .font(.body.weight(.medium))
-                        .foregroundStyle(Theme.Colors.foreground)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(profile.name)
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(Theme.Colors.foreground)
+
+                        if profile.gamesPlayed > 0 {
+                            Text(statsLabel(for: profile))
+                                .font(.caption)
+                                .foregroundStyle(Theme.Colors.secondary)
+                        }
+                    }
                 }
                 .padding(.vertical, Theme.Spacing.xs)
                 .listRowBackground(Theme.Colors.background)
@@ -97,6 +106,12 @@ struct ProfilesView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+    }
+
+    private func statsLabel(for profile: Profile) -> String {
+        let parties = profile.gamesPlayed == 1 ? "partie" : "parties"
+        let victoires = profile.gamesWon == 1 ? "victoire" : "victoires"
+        return "\(profile.gamesPlayed) \(parties) · \(profile.gamesWon) \(victoires)"
     }
 
     private var emptyState: some View {

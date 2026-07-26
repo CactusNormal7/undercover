@@ -40,12 +40,15 @@ struct ContentView: View {
                         }
                         .buttonStyle(.uSecondary)
 
-                        Button("Règles du jeu") {
-                            // À venir : écran des règles
+                        NavigationLink {
+                            RulesView()
+                        } label: {
+                            Text("Règles du jeu")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Theme.Colors.secondary)
+                                .padding(.top, Theme.Spacing.xs)
+                                .contentShape(Rectangle())
                         }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Theme.Colors.secondary)
-                        .padding(.top, Theme.Spacing.xs)
                     }
                 }
                 .padding(.horizontal, Theme.Spacing.l)

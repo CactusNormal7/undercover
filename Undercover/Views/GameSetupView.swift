@@ -2,9 +2,13 @@ import SwiftUI
 
 struct GameSetupView: View {
     @Environment(ProfileStore.self) private var profileStore
+    @Environment(WordStore.self) private var wordStore
+    @Environment(\.dismiss) private var dismiss
 
     @State private var setup = GameSetup()
     @State private var showingNewProfile = false
+    @State private var session: GameSession?
+    @State private var startError: String?
 
     var body: some View {
         ZStack {
@@ -24,6 +28,14 @@ struct GameSetupView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingNewProfile) {
             ProfileEditorView()
+        }
+        // `item:` et non `isPresented:` : la session doit être construite une
+        // seule fois, au tap, pas à chaque réévaluation de la closure.
+        .fullScreenCover(item: $session) { session in
+            GameContainerView(session: session) {
+                self.session = nil
+                dismiss()
+            }
         }
         .onChange(of: setup.playerCount) { _, _ in
             setup.resetRolesToDefault()
@@ -183,7 +195,8 @@ struct GameSetupView: View {
                     .frame(minWidth: 28)
                     .monospacedDigit()
                 stepperButton(systemName: "plus") {
-                    value.wrappedValue += 1
+                    // Jamais plus d'un rôle que de joueurs autour de la table.
+                    if value.wrappedValue < setup.playerCount { value.wrappedValue += 1 }
                 }
             }
             .padding(.horizontal, 4)
@@ -212,12 +225,36 @@ struct GameSetupView: View {
     // MARK: Start
 
     private var startButton: some View {
-        Button("Commencer la partie") {
-            // La distribution des mots / rôles arrivera dans une prochaine itération.
+        VStack(spacing: Theme.Spacing.s) {
+            Button("Commencer la partie", action: start)
+                .buttonStyle(.uPrimary)
+                .disabled(!canStart)
+                .opacity(canStart ? 1 : 0.35)
+
+            if let startError {
+                Text(startError)
+                    .font(.footnote)
+                    .foregroundStyle(Theme.Colors.secondary)
+                    .multilineTextAlignment(.center)
+            }
         }
-        .buttonStyle(.uPrimary)
-        .disabled(!setup.isBalanced)
-        .opacity(setup.isBalanced ? 1 : 0.35)
+    }
+
+    private var canStart: Bool {
+        setup.isBalanced && !wordStore.pairs.isEmpty
+    }
+
+    private func start() {
+        guard let session = GameSession(
+            setup: setup,
+            profileStore: profileStore,
+            wordStore: wordStore
+        ) else {
+            startError = "Impossible de lancer la partie : aucune paire de mots disponible."
+            return
+        }
+        startError = nil
+        self.session = session
     }
 
     // MARK: Helpers
