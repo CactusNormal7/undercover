@@ -7,6 +7,7 @@ struct GameSetupView: View {
 
     @State private var setup = GameSetup()
     @State private var showingNewProfile = false
+    @State private var showingPlayerSelection = false
     @State private var session: GameSession?
     @State private var startError: String?
 
@@ -28,6 +29,9 @@ struct GameSetupView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingNewProfile) {
             ProfileEditorView()
+        }
+        .sheet(isPresented: $showingPlayerSelection) {
+            PlayerSelectionView(selectedIDs: $setup.selectedProfileIDs)
         }
         // `item:` et non `isPresented:` : la session doit être construite une
         // seule fois, au tap, pas à chaque réévaluation de la closure.
@@ -58,68 +62,60 @@ struct GameSetupView: View {
             if profileStore.profiles.isEmpty {
                 emptyProfiles
             } else {
-                VStack(spacing: Theme.Spacing.s) {
-                    ForEach(profileStore.profiles) { profile in
-                        profileRow(profile)
-                    }
-                    newProfileButton
+                if !selectedProfiles.isEmpty {
+                    selectedStrip
                 }
+                selectPlayersButton
             }
         }
     }
 
-    private func profileRow(_ profile: Profile) -> some View {
-        let isSelected = setup.selectedProfileIDs.contains(profile.id)
+    /// Profils retenus, dans l'ordre de sélection.
+    private var selectedProfiles: [Profile] {
+        setup.selectedProfileIDs.compactMap { id in
+            profileStore.profiles.first { $0.id == id }
+        }
+    }
 
-        return Button {
-            toggle(profile)
-        } label: {
+    /// Aperçu horizontal des joueurs retenus : reste lisible quel que soit
+    /// leur nombre, là où la liste complète débordait de l'écran.
+    private var selectedStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.m) {
-                AvatarView(name: profile.name, imageData: profile.imageData, size: 44)
-
-                Text(profile.name)
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(Theme.Colors.foreground)
-
-                Spacer(minLength: Theme.Spacing.s)
-
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22, weight: .regular))
-                    .foregroundStyle(Theme.Colors.foreground)
+                ForEach(selectedProfiles) { profile in
+                    VStack(spacing: Theme.Spacing.xs) {
+                        AvatarView(name: profile.name, imageData: profile.imageData, size: 52)
+                        Text(profile.name)
+                            .font(.caption)
+                            .foregroundStyle(Theme.Colors.secondary)
+                            .lineLimit(1)
+                    }
+                    .frame(width: 64)
+                }
             }
-            .padding(Theme.Spacing.s)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? Theme.Colors.foreground.opacity(0.05) : .clear)
-            )
+            .padding(.vertical, Theme.Spacing.xs)
+        }
+    }
+
+    private var selectPlayersButton: some View {
+        Button {
+            showingPlayerSelection = true
+        } label: {
+            HStack(spacing: Theme.Spacing.s) {
+                Image(systemName: "person.2")
+                    .font(.system(size: 17))
+                Text(setup.selectedProfileIDs.isEmpty ? "Choisir les joueurs" : "Modifier la sélection")
+                    .font(.body.weight(.medium))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.Colors.secondary)
+            }
+            .foregroundStyle(Theme.Colors.foreground)
+            .padding(Theme.Spacing.m)
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(Theme.Colors.separator, lineWidth: 1)
-            )
-            // Sans ça, le fond est `.clear` tant que la ligne n'est pas
-            // sélectionnée : seuls l'avatar, le nom et la pastille répondaient
-            // au tap, et tout le vide entre les deux était mort.
-            .contentShape(RoundedRectangle(cornerRadius: 14))
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var newProfileButton: some View {
-        Button {
-            showingNewProfile = true
-        } label: {
-            HStack(spacing: Theme.Spacing.s) {
-                Image(systemName: "plus.circle")
-                    .font(.system(size: 18, weight: .regular))
-                Text("Nouveau profil")
-                    .font(.body.weight(.medium))
-            }
-            .foregroundStyle(Theme.Colors.secondary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Theme.Spacing.m)
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(Theme.Colors.separator, style: StrokeStyle(lineWidth: 1, dash: [4]))
             )
             .contentShape(RoundedRectangle(cornerRadius: 14))
         }
@@ -275,11 +271,4 @@ struct GameSetupView: View {
             .foregroundStyle(Theme.Colors.secondary)
     }
 
-    private func toggle(_ profile: Profile) {
-        if let index = setup.selectedProfileIDs.firstIndex(of: profile.id) {
-            setup.selectedProfileIDs.remove(at: index)
-        } else {
-            setup.selectedProfileIDs.append(profile.id)
-        }
-    }
 }
