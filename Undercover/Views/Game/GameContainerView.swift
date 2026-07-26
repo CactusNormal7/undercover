@@ -69,11 +69,15 @@ struct GameContainerView: View {
         case .discussion:
             DiscussionView(session: session)
         case .voting:
+            // Repart d'une sélection vierge à chaque manche.
             VotingView(session: session)
+                .id(session.game.currentRound)
         case .roundResult:
             RoundResultView(session: session)
         case .mrWhiteGuess:
+            // Sinon le champ garderait la réponse ratée du Mr. White précédent.
             MrWhiteGuessView(session: session)
+                .id(session.game.pendingGuesserID)
         case .gameOver:
             GameOverView(session: session, onFinish: onFinish)
         case .setup:

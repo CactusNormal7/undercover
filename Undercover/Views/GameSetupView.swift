@@ -96,6 +96,10 @@ struct GameSetupView: View {
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(Theme.Colors.separator, lineWidth: 1)
             )
+            // Sans ça, le fond est `.clear` tant que la ligne n'est pas
+            // sélectionnée : seuls l'avatar, le nom et la pastille répondaient
+            // au tap, et tout le vide entre les deux était mort.
+            .contentShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
     }
@@ -117,6 +121,7 @@ struct GameSetupView: View {
                 RoundedRectangle(cornerRadius: 14)
                     .strokeBorder(Theme.Colors.separator, style: StrokeStyle(lineWidth: 1, dash: [4]))
             )
+            .contentShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
     }
@@ -218,6 +223,10 @@ struct GameSetupView: View {
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(Theme.Colors.foreground)
                 .frame(width: 32, height: 32)
+                // Le `frame` ne dessine rien : sans `contentShape`, seuls les
+                // pixels du glyphe étaient tapables. Le « − » n'est qu'un trait
+                // fin, il en devenait quasi impossible à atteindre.
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

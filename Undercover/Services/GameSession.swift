@@ -11,7 +11,11 @@ import Observation
 final class GameSession: Identifiable {
 
     private(set) var game: Game
-    var id: UUID { game.id }
+
+    /// Identité propre à la session, volontairement **pas** `game.id` :
+    /// `replay()` remplace la partie, et comme `fullScreenCover(item:)` est
+    /// keyé là-dessus, une identité qui change refermerait la modale.
+    let id = UUID()
 
     private let profileStore: ProfileStore
     private let wordStore: WordStore
