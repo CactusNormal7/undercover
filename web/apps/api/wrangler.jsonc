@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "undercover-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-01",
+  // Une partie = un Durable Object, nommé d'après son code d'invitation.
+  "durable_objects": {
+    "bindings": [{ "name": "GAME_ROOM", "class_name": "GameRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] }],
+  // Les paires de mots sont lues depuis le **même** CSV que l'app iOS
+  // (`words/` à la racine du dépôt) : un seul corpus, pas de divergence.
+  "rules": [{ "type": "Text", "globs": ["**/*.csv"], "fallthrough": true }],
+  "vars": {
+    "ALLOWED_ORIGINS": "http://localhost:5173",
+    // Écrasé par un vrai secret en production : `wrangler secret put SEAT_SECRET`.
+    "SEAT_SECRET": "dev-only-insecure-secret"
+  },
+  "observability": { "enabled": true }
+}

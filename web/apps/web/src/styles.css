@@ -1,0 +1,426 @@
+/*
+ * Direction artistique reprise de l'app iOS (`DesignSystem/Theme.swift`) :
+ * strictement monochrome, adaptative clair/sombre, échelle d'espacement de 4px.
+ */
+
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --secondary: rgba(0, 0, 0, 0.55);
+  --separator: rgba(0, 0, 0, 0.15);
+
+  --space-xs: 4px;
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --radius: 14px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --fg: #ffffff;
+    --secondary: rgba(255, 255, 255, 0.55);
+    --separator: rgba(255, 255, 255, 0.15);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.screen,
+.lobby,
+.game {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-l) var(--space-m) var(--space-xxl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  min-height: 100vh;
+}
+
+.screen--centered {
+  justify-content: center;
+}
+
+.title {
+  font-size: clamp(32px, 8vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--secondary);
+  margin: 0;
+}
+
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  margin: 0 0 var(--space-s);
+  font-weight: 600;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+}
+
+.muted {
+  color: var(--secondary);
+}
+
+.note {
+  color: var(--secondary);
+  font-size: 14px;
+  margin: var(--space-s) 0 0;
+}
+
+.note--premium {
+  border-left: 2px solid var(--separator);
+  padding-left: var(--space-s);
+}
+
+.waiting {
+  color: var(--secondary);
+  text-align: center;
+  padding: var(--space-m) 0;
+}
+
+.error {
+  color: var(--fg);
+  border: 1px solid var(--separator);
+  border-radius: var(--radius);
+  padding: var(--space-s) var(--space-m);
+  font-size: 14px;
+}
+
+.error--banner {
+  margin: 0 0 var(--space-s);
+}
+
+/* Champs ---------------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.field > span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+}
+
+input,
+select {
+  font: inherit;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius);
+  padding: var(--space-s) var(--space-m);
+  width: 100%;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+
+.input--code {
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Boutons --------------------------------------------------------------- */
+
+.button {
+  font: inherit;
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: var(--space-m);
+  cursor: pointer;
+  border: 1px solid var(--fg);
+  transition: opacity 0.15s ease;
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--fg);
+}
+
+.button--link {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  padding: var(--space-s);
+  text-decoration: underline;
+}
+
+.divider {
+  text-align: center;
+  color: var(--secondary);
+  font-size: 13px;
+}
+
+/* Salon ----------------------------------------------------------------- */
+
+.lobby__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+  border-bottom: 1px solid var(--separator);
+  padding-bottom: var(--space-m);
+}
+
+.code {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin: var(--space-xs) 0 0;
+}
+
+.players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.players li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  padding: var(--space-s) 0;
+  border-bottom: 1px solid var(--separator);
+}
+
+.player__name {
+  flex: 1;
+}
+
+.player--away {
+  opacity: 0.5;
+}
+
+.player--winner .player__name {
+  font-weight: 700;
+}
+
+.tag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--separator);
+  border-radius: 999px;
+  padding: 2px var(--space-s);
+}
+
+.tag--muted {
+  color: var(--secondary);
+}
+
+.row {
+  display: flex;
+  gap: var(--space-m);
+}
+
+.stepper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.stepper__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  border: 1px solid var(--separator);
+  border-radius: var(--radius);
+  padding: var(--space-xs) var(--space-s);
+}
+
+.stepper__controls button {
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
+  padding: var(--space-xs) var(--space-s);
+}
+
+.stepper__value {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Partie ---------------------------------------------------------------- */
+
+.game__header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--separator);
+  padding-bottom: var(--space-s);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  flex: 1;
+}
+
+.panel--centered {
+  justify-content: center;
+  align-items: stretch;
+  text-align: center;
+}
+
+.card {
+  font: inherit;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius);
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+.card__word {
+  font-size: clamp(28px, 9vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.card__cover {
+  color: var(--secondary);
+}
+
+.speakers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.speakers li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  padding: var(--space-s) 0;
+  border-bottom: 1px solid var(--separator);
+}
+
+.speakers__index {
+  color: var(--secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.speakers__me {
+  font-weight: 700;
+}
+
+.vote-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+
+.vote {
+  font: inherit;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--separator);
+  border-radius: var(--radius);
+  padding: var(--space-m);
+  cursor: pointer;
+}
+
+.vote--mine {
+  border-color: var(--fg);
+  font-weight: 700;
+}
+
+.vote:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.vote__count {
+  font-variant-numeric: tabular-nums;
+}
+
+.reveal {
+  font-size: 18px;
+}
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  border-top: 1px solid var(--separator);
+  padding-top: var(--space-s);
+  font-size: 13px;
+  color: var(--secondary);
+}
+
+.strip__player--out {
+  text-decoration: line-through;
+  opacity: 0.5;
+}

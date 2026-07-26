@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // `@undercover/rules` est consommé en source : il faut ses globales
+    // plateforme (`crypto`, `structuredClone`) pour le typer ici aussi.
+    "lib": ["ES2022", "DOM"],
+    "noEmit": true
+  },
+  "include": ["src"]
+}
