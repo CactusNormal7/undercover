@@ -27,6 +27,18 @@ final class GameWinConditionTests: XCTestCase {
         game.players.filter { $0.role == role }[offset].id
     }
 
+    /// Premier joueur **encore en vie** du rôle demandé : indispensable dès
+    /// qu'un scénario enchaîne plusieurs éliminations du même camp.
+    private func aliveID(_ game: Game, role: Role) -> UUID {
+        game.alivePlayers.first { $0.role == role }!.id
+    }
+
+    private func advanceToVoting(_ game: inout Game, seed: UInt64 = 1) {
+        var rng = SeededRNG(seed: seed)
+        game.startNextRound(using: &rng)
+        game.beginVoting()
+    }
+
     // MARK: Conditions de victoire
 
     func testFreshGameHasNoOutcome() {
@@ -148,13 +160,17 @@ final class GameWinConditionTests: XCTestCase {
 
     func testWinnerIDsIncludeEliminatedTeammates() {
         var game = makeGame(roles: [.civilian, .civilian, .civilian, .undercover, .undercover])
-        let firstUndercover = id(game, role: .undercover, offset: 0)
+        let firstUndercover = aliveID(game, role: .undercover)
 
-        game.eliminate(playerID: firstUndercover)          // un undercover tombe
-        var rng = SeededRNG(seed: 2)
-        game.startNextRound(using: &rng)
-        game.beginVoting()
-        game.eliminate(playerID: id(game, role: .civilian)) // parité atteinte
+        game.eliminate(playerID: firstUndercover)                  // 3 civils · 1 infiltré
+        XCTAssertNil(game.outcome)
+
+        advanceToVoting(&game)
+        game.eliminate(playerID: aliveID(game, role: .civilian))   // 2 civils · 1 infiltré
+        XCTAssertNil(game.outcome, "1 contre 2 : la partie continue")
+
+        advanceToVoting(&game)
+        game.eliminate(playerID: aliveID(game, role: .civilian))   // 1 · 1 → parité
 
         XCTAssertEqual(game.outcome, .infiltrators)
         let winners = game.winnerIDs(for: .infiltrators)
