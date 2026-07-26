@@ -136,3 +136,41 @@ Conséquences à garder en tête :
   de divergence entre plateformes.
 - Il n'existe aujourd'hui **aucun compte** : les profils sont locaux, `Profile.id` est un UUID
   d'appareil. Le jeu en ligne comme un droit d'accès multiplateforme en exigent un.
+
+#### Pile envisagée (recommandation, non actée)
+
+| Besoin | Choix conseillé |
+| --- | --- |
+| Frontend | React + Vite + TypeScript (SPA — c'est un jeu, pas un site de contenu ; Next.js seulement si des pages marketing/SEO s'y ajoutent) |
+| Temps réel + autorité | **Durable Objects Cloudflare** (via PartyKit) : un objet = une partie. Alternative auto-hébergée : **Colyseus** |
+| Base de données | Postgres (Supabase ou Neon) — comptes, profils, stats, droits d'accès |
+| Authentification | Supabase Auth ou Clerk |
+| Paiement | **Stripe** côté web, **StoreKit 2** côté iOS, les deux écrivant dans la *même* table d'entitlements |
+
+Justifications, pour ne pas les re-débattre plus tard :
+
+- **Forme du problème** : beaucoup de petites parties isolées, chacune portant un état secret qui
+  ne vit que quelques minutes. C'est précisément la forme d'un Durable Object : état en mémoire,
+  WebSocket intégré, coût nul entre deux parties.
+- **Pourquoi pas un serveur Swift** (Vapor/Hummingbird), qui permettrait pourtant de réutiliser
+  `GameRules` tel quel : le moteur ne fait que ~250 lignes avec 39 tests qui *sont* sa
+  spécification. Le porter en TypeScript coûte une demi-journée ; engager toute la pile web dans
+  Swift pour l'éviter coûterait bien plus en écosystème, hébergement et intégration front.
+- **Porter les tests avec les règles**, pas seulement les règles : ce sont eux qui tiennent les
+  cas qu'une réimplémentation rate (devinette de Mr. White arbitrée avant la victoire civile,
+  parité, coéquipiers éliminés qui gagnent quand même).
+- Mettre les règles dans un **paquet TS partagé** serveur/client : le serveur reste autorité, le
+  client peut afficher en optimiste sans dupliquer la logique une troisième fois.
+- ⚠️ Si l'app iOS propose un login Google/Facebook, **Sign in with Apple devient obligatoire**
+  (règle App Store). À intégrer au choix de l'auth, pas après.
+
+#### La décision qui conditionne tout le reste
+
+**Un achat vaut-il sur les deux plateformes ?**
+
+- *Oui* → les deux apps ne peuvent pas être déliées : comptes partagés et entitlements côté
+  serveur deviennent obligatoires, et l'app iOS doit parler à ce backend (fin du tout-local).
+- *Non, achats par plateforme* → tout reste séparé, et l'app iOS peut continuer sans backend.
+
+C'est le choix le plus structurant et le plus coûteux à défaire. Toute la pile en découle : ce
+n'est pas une décision technique mais produit.
