@@ -46,19 +46,12 @@ function TokenBridge() {
   return null;
 }
 
-/** Coin compte : se connecter pour créer une partie premium, ou rester invité. */
-export function AccountBar() {
-  if (!authConfigured) {
-    return (
-      <p className="note">
-        Comptes désactivés (pas de clé Clerk). Pour simuler un hôte abonné :{' '}
-        <code>localStorage.setItem('undercover.devToken', 'dev:moi:sub')</code>
-      </p>
-    );
-  }
+/** Contrôles de compte, à droite du bandeau. Rien à afficher sans Clerk. */
+export function AccountControls() {
+  if (!authConfigured) return null;
 
   return (
-    <div className="account-bar">
+    <>
       <SignedOut>
         <SignInButton mode="modal">
           <button className="button button--link">Se connecter</button>
@@ -67,6 +60,21 @@ export function AccountBar() {
       <SignedIn>
         <UserButton />
       </SignedIn>
-    </div>
+    </>
+  );
+}
+
+/**
+ * Rappel du mode dégradé, sur l'accueil uniquement : sans clé Clerk on peut
+ * jouer, mais personne ne peut être abonné.
+ */
+export function DevTokenHint() {
+  if (authConfigured) return null;
+
+  return (
+    <p className="note">
+      Comptes désactivés (pas de clé Clerk). Pour simuler un hôte abonné :{' '}
+      <code>localStorage.setItem('undercover.devToken', 'dev:moi:sub')</code>
+    </p>
   );
 }

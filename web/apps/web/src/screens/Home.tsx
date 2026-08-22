@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 import { createRoom, joinRoom, recallName, rememberName, rememberSeat } from '../api.js';
-import { AccountBar } from '../auth.js';
+import { DevTokenHint } from '../auth.js';
+import { TopBar } from '../components/TopBar.js';
 
 /**
  * Accueil : créer une partie (il faut un compte pour porter l'abonnement) ou en
@@ -47,7 +48,7 @@ export function Home({ onEnterRoom }: { onEnterRoom: (code: string) => void }) {
 
   return (
     <main className="screen screen--centered">
-      <AccountBar />
+      <TopBar />
       <h1 className="title">Undercover</h1>
       <p className="subtitle">Le même jeu, chacun sur son écran.</p>
 

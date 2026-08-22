@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { joinRoom, recallName, recallSeat, rememberName, rememberSeat, type Seat } from '../api.js';
+import { TopBar } from '../components/TopBar.js';
 import { useRoom } from '../useRoom.js';
 import { GameScreen } from './GameScreen.js';
 import { Lobby } from './Lobby.js';
@@ -34,6 +35,7 @@ export function RoomScreen({ code, onLeave }: { code: string; onLeave: () => voi
 
     return (
       <main className="screen screen--centered">
+        <TopBar />
         <h1 className="title">Partie {code}</h1>
         <p className="subtitle">Aucun compte nécessaire pour rejoindre.</p>
         <label className="field">
@@ -60,6 +62,7 @@ export function RoomScreen({ code, onLeave }: { code: string; onLeave: () => voi
   if (!room) {
     return (
       <main className="screen screen--centered">
+        <TopBar />
         <p className="subtitle">
           {status === 'closed' ? 'Connexion perdue.' : 'Connexion à la partie…'}
         </p>
@@ -72,6 +75,7 @@ export function RoomScreen({ code, onLeave }: { code: string; onLeave: () => voi
 
   return (
     <div className="screen">
+      <TopBar />
       {liveError && <p className="error error--banner">{liveError}</p>}
       {room.status === 'lobby' || !room.game ? (
         <Lobby room={room} send={send} onLeave={onLeave} />

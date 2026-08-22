@@ -1,6 +1,11 @@
 /*
  * Direction artistique reprise de l'app iOS (`DesignSystem/Theme.swift`) :
  * strictement monochrome, adaptative clair/sombre, échelle d'espacement de 4px.
+ *
+ * Trois états possibles, dans cet ordre de priorité :
+ *  1. choix explicite de l'utilisateur, porté par `data-theme` sur <html> ;
+ *  2. à défaut, la préférence du système (`prefers-color-scheme`) ;
+ *  3. à défaut, le clair, défini ci-dessous sur `:root`.
  */
 
 :root {
@@ -20,13 +25,27 @@
   color-scheme: light dark;
 }
 
+/* Système en sombre — sauf si le clair a été explicitement demandé. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #000000;
     --fg: #ffffff;
     --secondary: rgba(255, 255, 255, 0.55);
     --separator: rgba(255, 255, 255, 0.15);
   }
+}
+
+/* Sombre choisi explicitement, quel que soit le système. */
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --fg: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.55);
+  --separator: rgba(255, 255, 255, 0.15);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
 }
 
 * {
@@ -427,11 +446,40 @@ select:focus {
 
 /* Compte ---------------------------------------------------------------- */
 
-.account-bar {
+.top-bar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  gap: var(--space-m);
   min-height: 32px;
+}
+
+/* Discret par défaut : on ne règle son thème qu'une fois. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--secondary);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--fg);
+  border-color: var(--separator);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
 }
 
 code {
