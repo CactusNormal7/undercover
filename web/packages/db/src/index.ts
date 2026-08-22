@@ -49,6 +49,8 @@ export interface UndercoverDb {
   grantEntitlement(input: GrantEntitlementInput): Promise<void>;
   /** `false` si l'événement a déjà été traité : les webhooks sont rejoués. */
   claimWebhookEvent(provider: EntitlementSource, eventId: string): Promise<boolean>;
+  /** Aller-retour minimal, pour les contrôles de santé au déploiement. */
+  ping(): Promise<void>;
   close(): Promise<void>;
 }
 
@@ -117,6 +119,10 @@ export function createDb(databaseUrl: string): UndercoverDb {
         // Violation de l'unicité (provider, eventId) : déjà traité.
         return false;
       }
+    },
+
+    async ping() {
+      await prisma.$queryRaw`select 1`;
     },
 
     close: () => prisma.$disconnect(),

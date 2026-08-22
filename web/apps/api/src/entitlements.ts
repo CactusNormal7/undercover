@@ -89,6 +89,21 @@ async function verifyClerkUser(request: Request, env: Env): Promise<ClerkUser | 
   }
 }
 
+/**
+ * Contrôle de santé de la base. `null` quand aucune base n'est configurée —
+ * ce n'est pas une panne, c'est le mode dégradé assumé (jouer sans comptes).
+ */
+export async function checkDatabase(env: Env): Promise<{ ok: boolean; error?: string } | null> {
+  const store = db(env);
+  if (!store) return null;
+  try {
+    await store.ping();
+    return { ok: true };
+  } catch (cause) {
+    return { ok: false, error: cause instanceof Error ? cause.message : String(cause) };
+  }
+}
+
 /** Identité seule, sans lecture des droits. */
 export async function resolveIdentity(request: Request, env: Env): Promise<Identity> {
   const user = await verifyClerkUser(request, env);

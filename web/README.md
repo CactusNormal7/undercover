@@ -42,6 +42,24 @@ cp packages/db/.env.example packages/db/.env           # DATABASE_URL (migration
 pnpm --filter @undercover/db migrate                   # crée les tables
 ```
 
+Vérifier que le Worker atteint bien la base :
+`curl 'http://localhost:8787/api/health?deep=1'`
+
+### Supabase : quelle URL de connexion
+
+Contre-intuitif mais important — **ne pas utiliser la connexion « directe »**
+(`db.<ref>.supabase.co:5432`) que la console met en avant : elle ne résout
+qu'en **IPv6**, injoignable depuis un Worker Cloudflare comme depuis beaucoup de
+postes. Passer par le pooler, qui est en IPv4 :
+
+| Usage | Hôte | Port |
+| --- | --- | --- |
+| Migrations (`packages/db/.env`) | `aws-…pooler.supabase.com` | `5432` — mode **session** |
+| Runtime (`apps/api/.dev.vars`) | le même | `6543` — mode **transaction** |
+
+Le mode session est requis par les migrations (DDL, transactions longues) ; le
+mode transaction tient les connexions courtes et nombreuses d'un Worker.
+
 ## Base de données
 
 Prisma est là **pour ne pas s'attacher à un hébergeur**, pas pour le confort
@@ -92,6 +110,7 @@ le jeton de siège** (HMAC) plutôt que revérifiée à la connexion.
 | Sujet | État |
 | --- | --- |
 | Authentification | ✅ Clerk, côté serveur et côté front. Repli invité si la clé manque. |
+| Base de données | ✅ Supabase (`eu-west-1`), migration appliquée : `accounts`, `entitlements`, `processed_webhook_events`. Connectivité vérifiée depuis le Worker. |
 | Schéma des entitlements | ✅ Table unique `entitlements`, une ligne par compte quelle que soit la plateforme d'achat, plus l'idempotence des webhooks. |
 | **Écriture** des entitlements | ❌ **Rien n'écrit dedans.** Personne ne peut devenir abonné autrement qu'en insérant la ligne à la main. C'est le prochain trou à boucher. |
 | Paiement | ❌ Stripe côté web (webhook → `grantEntitlement`), StoreKit 2 + App Store Server Notifications V2 côté iOS. `claimWebhookEvent` est déjà là pour l'idempotence. |

@@ -1,5 +1,5 @@
 import type { Env } from './env.js';
-import { resolveHostAccess, resolveIdentity } from './entitlements.js';
+import { checkDatabase, resolveHostAccess, resolveIdentity } from './entitlements.js';
 import { issueSeatToken, verifySeatToken } from './seat.js';
 
 export { GameRoom } from './GameRoom.js';
@@ -141,7 +141,17 @@ export default {
       }
     }
 
-    if (url.pathname === '/api/health') return json({ ok: true }, { status: 200, cors });
+    // `?deep=1` teste aussi la base : utile au déploiement, mais volontairement
+    // pas fait par défaut — un contrôle de santé ne doit pas coûter une requête
+    // Postgres à chaque appel.
+    if (url.pathname === '/api/health') {
+      if (url.searchParams.get('deep') !== '1') return json({ ok: true }, { status: 200, cors });
+      const database = await checkDatabase(env);
+      return json(
+        { ok: database?.ok !== false, database: database ?? 'non configurée' },
+        { status: database?.ok === false ? 503 : 200, cors },
+      );
+    }
 
     return json({ error: 'not_found' }, { status: 404, cors });
   },

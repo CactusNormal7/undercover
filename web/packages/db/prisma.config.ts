@@ -1,6 +1,10 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { defineConfig } from 'prisma/config';
 
+// Prisma 7 ne lit plus `.env` tout seul : sans ça, `DATABASE_URL` est absente
+// au moment où ce fichier est évalué.
+process.loadEnvFile?.(new URL('.env', import.meta.url).pathname);
+
 /**
  * Configuration de la CLI Prisma (migrations, studio).
  *

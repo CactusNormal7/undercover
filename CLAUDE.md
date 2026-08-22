@@ -147,6 +147,10 @@ code, joueurs invités sans compte, révélation, discussion, vote dépouillé p
 de Mr. White, fin de partie et rejeu. Le serveur est autorité et n'envoie à chacun que sa
 projection. Clerk vérifie les sessions, le schéma Prisma des comptes et entitlements existe.
 
+La base est en service : Supabase (`eu-west-1`), migration initiale appliquée, connectivité
+vérifiée depuis le Worker (`/api/health?deep=1`). ⚠️ Se connecter par le **pooler** et non par la
+connexion « directe » de Supabase, qui ne résout qu'en IPv6 : détails dans `web/README.md`.
+
 Manque encore : **rien n'écrit dans la table des entitlements** (ni Stripe, ni les notifications
 App Store), donc personne ne peut devenir abonné autrement qu'à la main ; les statistiques de fin
 de partie ne sont pas enregistrées ; les « règles poussées » sont transportées
