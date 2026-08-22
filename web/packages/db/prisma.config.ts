@@ -8,12 +8,17 @@ import { defineConfig } from 'prisma/config';
  * adaptateur depuis `createDb()`, avec l'URL fournie par le Worker. Deux
  * chemins, une seule variable d'environnement.
  */
+function connectionString(): string {
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error('DATABASE_URL manquante (cf. .env.example)');
+  return url;
+}
+
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: { path: 'prisma/migrations' },
-  adapter: async () => {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) throw new Error('DATABASE_URL manquante (cf. .env.example)');
-    return new PrismaPg({ connectionString });
-  },
+  // `migrate` a besoin de l'URL en clair (il ouvre sa propre connexion, et une
+  // shadow database) ; l'adaptateur sert au reste de la CLI, `studio` compris.
+  datasource: { url: connectionString() },
+  adapter: async () => new PrismaPg({ connectionString: connectionString() }),
 });
